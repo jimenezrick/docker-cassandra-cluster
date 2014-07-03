@@ -1,0 +1,49 @@
+#!/bin/sh
+
+set -o nounset
+set -o errexit
+
+start_node()
+{
+	case $1 in
+		1)
+			docker run -d -P --name cassandra$i -v /var/lib/cassandra -v /var/log/cassandra cassandra-cluster
+			;;
+		*)
+			docker run -d -P --name cassandra$i --link cassandra1:cassandra1 -v /var/lib/cassandra -v /var/log/cassandra cassandra-cluster
+			;;
+	esac
+}
+
+stop_nodes()
+{
+	while read container
+	do
+		docker stop $container
+		docker rm $container
+	done <cassandra-nodes
+}
+
+case $# in
+	0)
+		nodes=1
+		;;
+	*)
+		if [ $1 = stop ]
+		then
+			echo "* Stopping all Cassandra nodes..."
+			stop_nodes
+			rm -f cassandra-nodes
+			exit 0
+		else
+			nodes=$1
+		fi
+		;;
+esac
+
+for i in $(seq $nodes)
+do
+	echo "* Starting Cassandra node $i..."
+	id=$(start_node $i)
+	echo $id >>cassandra-nodes
+done

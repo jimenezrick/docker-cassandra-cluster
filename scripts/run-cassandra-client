@@ -1,0 +1,13 @@
+#!/bin/sh
+
+case $# in
+	0)
+		node=1
+		;;
+	*)
+		node=$1
+		;;
+esac
+
+docker run --rm -i -t --link cassandra$node:cassandra$node --volumes-from cassandra$node cassandra-cluster sh -c \
+	"echo -n '* Linked to Cassandra node: '; echo \$CASSANDRA${node}_PORT_7000_TCP_ADDR; bash"
