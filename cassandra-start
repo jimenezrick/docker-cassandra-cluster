@@ -19,6 +19,10 @@ sed -i -e "s/^rpc_address.*/rpc_address: 0.0.0.0/" $CONFIG/cassandra.yaml
 sed -i -e "s/- seeds: \"127.0.0.1\"/- seeds: \"$SEEDS\"/" $CONFIG/cassandra.yaml
 sed -i -e "s/# JVM_OPTS=\"\$JVM_OPTS -Djava.rmi.server.hostname=<public name>\"/JVM_OPTS=\"\$JVM_OPTS -Djava.rmi.server.hostname=$IP\"/" $CONFIG/cassandra-env.sh
 
+# Enable virtual nodes in Cassandra 1.x
+sed -i -e "s/^# num_tokens: 256/num_tokens: 256/" $CONFIG/cassandra.yaml
+sed -i -e "s/^initial_token:/# initial_token:/" $CONFIG/cassandra.yaml
+
 if [ `stat --format=%U /var/lib/cassandra` != "cassandra" ]
 then
 	chown -R cassandra:cassandra /var/lib/cassandra

@@ -13,6 +13,8 @@ RUN apt-get install -y curl
 # Preemptively accept the Oracle License and install the JDK
 RUN echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
 RUN apt-get install -y oracle-java8-installer oracle-java8-set-default
+# Enable JNA
+RUN curl -L -o /usr/lib/jvm/java-8-oracle/jre/lib/ext/jna.jar https://github.com/twall/jna/raw/master/dist/jna.jar
 
 # Install Cassandra
 RUN echo "deb http://debian.datastax.com/community stable main" >/etc/apt/sources.list.d/datastax.list

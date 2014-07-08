@@ -58,3 +58,10 @@ directories where the selected Cassandra node is writing such as:
 Although the client container is linked to one of the Cassandra nodes to
 inspect its disk, the client container has network access to all the
 nodes of the cluster.
+
+Choosing a specific Cassandra release
+-------------------------------------
+
+The default ``Dockerfile`` pulls a recent release of Cassandra, modify
+the install directive with the specific version you need and rebuild the
+image.
