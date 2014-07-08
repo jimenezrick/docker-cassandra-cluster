@@ -3,20 +3,21 @@
 set -o nounset
 set -o errexit
 
-start_node()
-{
+usage() {
+	echo "Usage: $0 [<size> | stop]"
+	exit 1
+}
+
+start_node() {
 	case $1 in
 		1)
-			docker run -d -P --name cassandra$i -v /var/lib/cassandra -v /var/log/cassandra cassandra-cluster
-			;;
+			docker run -d -P --name cassandra$i -v /var/lib/cassandra -v /var/log/cassandra cassandra-cluster ;;
 		*)
-			docker run -d -P --name cassandra$i --link cassandra1:cassandra1 -v /var/lib/cassandra -v /var/log/cassandra cassandra-cluster
-			;;
+			docker run -d -P --name cassandra$i --link cassandra1:cassandra1 -v /var/lib/cassandra -v /var/log/cassandra cassandra-cluster ;;
 	esac
 }
 
-stop_nodes()
-{
+stop_nodes() {
 	while read container
 	do
 		docker stop $container
@@ -26,19 +27,21 @@ stop_nodes()
 
 case $# in
 	0)
-		nodes=1
-		;;
+		nodes=1 ;;
+	1)
+		case $1 in
+			-h)
+				usage ;;
+			stop)
+				echo "* Stopping all Cassandra nodes..."
+				stop_nodes
+				rm -f cassandra-nodes
+				exit 0 ;;
+			*)
+				nodes=$1 ;;
+		esac ;;
 	*)
-		if [ $1 = stop ]
-		then
-			echo "* Stopping all Cassandra nodes..."
-			stop_nodes
-			rm -f cassandra-nodes
-			exit 0
-		else
-			nodes=$1
-		fi
-		;;
+		usage ;;
 esac
 
 for i in $(seq $nodes)

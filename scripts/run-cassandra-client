@@ -1,12 +1,22 @@
 #!/bin/sh
 
+usage() {
+	echo "Usage: $0 [<node>]"
+	exit 1
+}
+
 case $# in
 	0)
-		node=1
-		;;
+		node=1 ;;
+	1)
+		case $1 in
+			-h)
+				usage ;;
+			*)
+				node=$1 ;;
+		esac ;;
 	*)
-		node=$1
-		;;
+		usage ;;
 esac
 
 docker run --rm -i -t --link cassandra$node:cassandra$node --volumes-from cassandra$node cassandra-cluster sh -c \
